@@ -6,7 +6,7 @@ const router = new KoaRouter();
 router.get('api.users.list', '/', async (ctx) => {
 	const users = await ctx.orm.user.findAll();
 	ctx.body = ctx.jsonSerializer('user', {
-	attributes: ['name', 'email', 'password', 'rut', 'type', 'phone','rsocial','bank_account'],
+	attributes: ['name', 'email', 'img','password','vendor_name', 'rut', 'type', 'phone','rsocial','bank_account'],
 	topLevelLinks: {
 		self: `${ctx.origin}${ctx.router.url('api.users.list')}`,
 	},
@@ -19,7 +19,7 @@ router.get('api.users.list', '/', async (ctx) => {
 router.get('api.users.show', '/:id', async (ctx) => {
 	const user = await ctx.orm.user.findByPk(ctx.params.id);
 	ctx.body = ctx.jsonSerializer('user', {
-		attributes: ['name', 'email', 'password', 'rut', 'type', 'phone','rsocial','bank_account'],
+		attributes: ['name', 'email', 'password', 'img','vendor_name','rut', 'type', 'phone','rsocial','bank_account'],
 		topLevelLinks: {
 		self: `${ctx.origin}${ctx.router.url('api.users')}`,
 		},
@@ -31,7 +31,7 @@ router.post('users.create', '/create', async (ctx) => {
 	const { img } = ctx.request.body;
 	
 	try {
-		await user.save({ fields: ['name', 'email', 'password', 'rut', 'type', 'phone','rsocial','bank_account' ] });//sin foto
+		await user.save({ fields: ['name', 'email','img', 'vendor_name','password', 'rut', 'type', 'phone','rsocial','bank_account' ] });//sin foto
 		console.log(`se guardo`)
 		const token = await new Promise((resolve, reject) => {
 			jwtgenerator.sign(
@@ -44,34 +44,21 @@ router.post('users.create', '/create', async (ctx) => {
 		//ctx.redirect(ctx.router.url('api.users.list'));
 	} catch (validationError) {
 		console.log(validationError);
-		await ctx.render('users/new', {
-		user,
-		errors: validationError.errors,
-		submitUserPath: ctx.router.url('users.create'),
-		});
+		
 	}
 	});
-router.post('api.users.updatepass', '/updatepass', async (ctx) => {
-	const user = await ctx.orm.user.findByPk(ctx.params.id);
-	console.log(`entre a cambio de contrasena`)
-	const { cpassword, npassword } = ctx.request.body;
-	
-	if (await bcrypt.compare(cpassword, user.password)) {
-		console.log("IGUALESSSSSSSSSSSSSS");
-		user.update({password:npassword});
-		ctx.redirect(ctx.router.url('api.users.show', { id: user.id }));
-	
-	}else{
-		ctx.redirect(ctx.router.url('users.editpass', { id: user.id }));
-		const wrongpass = 1;
-		await ctx.render('users/editpass', {
-		user,
-		wrongpass,
-		submitUserPath: ctx.router.url('users.updatepass', { id: user.id }),
-		});
-	
+router.patch('users.update', '/edit', async (ctx) => {
+	const { id } = ctx.request.body;
+	const  user  = await ctx.orm.user.findByPk(id);
+	try {
+		const { name, email, img, vendor_name, rut, type, phone,rsocial,bank_account} = ctx.request.body;
+		await user.update({ name, email, img, vendor_name, rut, type, phone,rsocial,bank_account});
+		ctx.body = { user };
+	} catch (validationError) {
+		console.log(validationError);
 	}
-});
+	});
+
 	
 
 module.exports = router;
