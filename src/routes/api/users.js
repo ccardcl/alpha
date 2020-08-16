@@ -51,7 +51,7 @@ router.post('users.create', '/create', async (ctx) => {
 		});
 	}
 	});
-router.post('api.users.updatepass', '/updatepass/:id', async (ctx) => {
+router.post('api.users.updatepass', '/updatepass', async (ctx) => {
 	const user = await ctx.orm.user.findByPk(ctx.params.id);
 	console.log(`entre a cambio de contrasena`)
 	const { cpassword, npassword } = ctx.request.body;
@@ -74,4 +74,4 @@ router.post('api.users.updatepass', '/updatepass/:id', async (ctx) => {
 });
 	
 
-	module.exports = router;
+module.exports = router;
