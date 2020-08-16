@@ -29,10 +29,19 @@ router.post('users.create', '/create', async (ctx) => {
 	console.log(`entre al post`)
 	const user = ctx.orm.user.build(ctx.request.body);
 	const { img } = ctx.request.body;
+	
 	try {
 		await user.save({ fields: ['name', 'email', 'password', 'rut', 'type', 'phone','rsocial','bank_account' ] });//sin foto
 		console.log(`se guardo`)
-		ctx.redirect(ctx.router.url('api.users.list'));
+		const token = await new Promise((resolve, reject) => {
+			jwtgenerator.sign(
+			  { userId: user.id },
+			  'authData',
+			  (err, tokenResult) => (err ? reject(err) : resolve(tokenResult)),
+			);
+		  });
+		  ctx.body = { token };
+		//ctx.redirect(ctx.router.url('api.users.list'));
 	} catch (validationError) {
 		console.log(validationError);
 		await ctx.render('users/new', {
@@ -42,8 +51,9 @@ router.post('users.create', '/create', async (ctx) => {
 		});
 	}
 	});
-router.patch('api.users.updatepass', '/:id/updatepass', async (ctx) => {
+router.post('api.users.updatepass', '/updatepass/:id', async (ctx) => {
 	const user = await ctx.orm.user.findByPk(ctx.params.id);
+	console.log(`entre a cambio de contrasena`)
 	const { cpassword, npassword } = ctx.request.body;
 	
 	if (await bcrypt.compare(cpassword, user.password)) {

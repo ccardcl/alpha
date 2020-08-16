@@ -14,7 +14,7 @@ router.post('auth', '/', async (ctx) => {
         (err, tokenResult) => (err ? reject(err) : resolve(tokenResult)),
       );
     });
-    ctx.body = { token };
+    ctx.body = { token, user };
   } else {
     ctx.throw(401, 'Wrong e-mail or password');
   }
