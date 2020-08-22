@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   const user = sequelize.define('user', {
     type: DataTypes.INTEGER,
     password: DataTypes.STRING,
+    vendor_name: DataTypes.STRING,
     email: DataTypes.STRING,
     rsocial: DataTypes.STRING,
     rut: DataTypes.STRING,

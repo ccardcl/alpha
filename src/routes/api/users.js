@@ -6,7 +6,7 @@ const router = new KoaRouter();
 router.get('api.users.list', '/', async (ctx) => {
 	const users = await ctx.orm.user.findAll();
 	ctx.body = ctx.jsonSerializer('user', {
-	attributes: ['name', 'email', 'img','password','vendor_name', 'rut', 'type', 'phone','rsocial','bank_account'],
+	attributes: ['name', 'email', 'img','vendor_name', 'rut', 'type', 'phone','rsocial','bank_account'],
 	topLevelLinks: {
 		self: `${ctx.origin}${ctx.router.url('api.users.list')}`,
 	},
@@ -19,20 +19,17 @@ router.get('api.users.list', '/', async (ctx) => {
 router.get('api.users.show', '/:id', async (ctx) => {
 	const user = await ctx.orm.user.findByPk(ctx.params.id);
 	ctx.body = ctx.jsonSerializer('user', {
-		attributes: ['name', 'email', 'password', 'img','vendor_name','rut', 'type', 'phone','rsocial','bank_account'],
+		attributes: ['name', 'email', 'img','rut', 'type', 'phone','rsocial','bank_account','vendor_name'],
 		topLevelLinks: {
 		self: `${ctx.origin}${ctx.router.url('api.users')}`,
 		},
 	}).serialize(user);
 	});
 router.post('users.create', '/create', async (ctx) => {
-	console.log(`entre al post`)
 	const user = ctx.orm.user.build(ctx.request.body);
-	const { img } = ctx.request.body;
 	
 	try {
-		await user.save({ fields: ['name', 'email','img', 'vendor_name','password', 'rut', 'type', 'phone','rsocial','bank_account' ] });//sin foto
-		console.log(`se guardo`)
+		await user.save({ fields: ['name', 'email', 'vendor_name','img','password', 'rut', 'type', 'phone','rsocial','bank_account' ] });//sin foto
 		const token = await new Promise((resolve, reject) => {
 			jwtgenerator.sign(
 			  { userId: user.id },
@@ -49,6 +46,7 @@ router.post('users.create', '/create', async (ctx) => {
 	});
 router.patch('users.update', '/edit', async (ctx) => {
 	const { id } = ctx.request.body;
+	console.log(id)
 	const  user  = await ctx.orm.user.findByPk(id);
 	try {
 		const { name, email, img, vendor_name, rut, type, phone,rsocial,bank_account} = ctx.request.body;

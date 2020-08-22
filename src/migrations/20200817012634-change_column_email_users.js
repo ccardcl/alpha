@@ -9,20 +9,27 @@ module.exports = {
       Example:
       return queryInterface.createTable('users', { id: Sequelize.INTEGER });
     */
-    return queryInterface.addColumn(
+    return queryInterface.changeColumn(
       'users',
-      'vendor_name',{
+      'email',{
+        type: Sequelize.STRING(40),
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: true
+        }
+    }
+
+  );
+  },
+  down: function(queryInterface, Sequelize) {
+    // logic for reverting the changes
+    return queryInterface.changeColumn(
+      'users',
+      'email',{
         type:Sequelize.STRING
       }
 
   );
-  },
-   down: function(queryInterface, Sequelize) {
-    // logic for reverting the changes
-    return queryInterface.removeColumn(
-      'users',
-      'vendor_name'
-    );
-  }
-  
+    }
 };
