@@ -44,7 +44,7 @@ router.post('users.create', '/', async (ctx) => {
 
   try {
     await user.save()
-    await user.save({ fields: ['name', 'email', 'password', 'rut', 'type', 'phone','rsocial','bank_account' ] });//sin foto
+    await user.save({ fields: ['name', 'email', 'vendor_name','password', 'rut', 'type', 'phone','rsocial','bank_account' ] });//sin foto
 
     ctx.redirect(ctx.router.url('users.list'));
   } catch (validationError) {
