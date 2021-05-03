@@ -6,6 +6,7 @@ const index = require('./routes/index');
 const artist = require('./routes/artists');
 const album= require('./routes/albums');
 const track= require('./routes/tracks');
+const data=require('./routes/db');
 const router = new KoaRouter();
 
 router.use(async (ctx, next) => {
@@ -17,6 +18,7 @@ router.use(async (ctx, next) => {
      return next();
    });
 //router.use('/api', api.routes());
+router.use('/dev', data.routes());
 router.use('/artists', artist.routes());
 router.use('/albums', album.routes());
 router.use('/tracks', track.routes());
