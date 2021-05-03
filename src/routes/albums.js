@@ -44,6 +44,15 @@ router.get('api.albums.list', '/', async (ctx) => {
 
   router.get('album.tracks.list', '/:id/tracks', async (ctx) => {
     try{
+        const existe = await ctx.orm.Album.findAll({
+            where: {
+              id: ctx.params.id
+            }
+          })
+        if (!existe.length){
+            ctx.throw(404, 'album no encontrado')
+        }else{
+            
       const tracks = await ctx.orm.Track.findAll({
         where: {
           albumId: ctx.params.id
@@ -66,6 +75,7 @@ router.get('api.albums.list', '/', async (ctx) => {
           data.push(body);
         })
       ctx.body=data;
+    }
     }catch{
       ctx.throw(404, 'album no encontrado')
     }
@@ -85,7 +95,7 @@ router.get('api.albums.list', '/', async (ctx) => {
         });
       if (art.length) {
         console.log('1sssss');
-    existe = await ctx.orm.Track.findAll({
+    const existe = await ctx.orm.Track.findAll({
       where: {
         name: ctx.request.body['name']
       }
@@ -115,7 +125,7 @@ router.get('api.albums.list', '/', async (ctx) => {
     const name1 = ctx.request.body['name']
     const encoder = `${name1}:${albuma.id}`
     const pkid =Buffer.from(encoder).toString('base64').slice(0, 22);
-    const  self = `${ctx.origin}/traks/${pkid}`;
+    const  self = `${ctx.origin}/tracks/${pkid}`;
     const album = `${ctx.origin}/albums/${albuma.id}`;
     const  artist =  `${ctx.origin}/artist/${albuma.artistId}`;
     const newbody= {

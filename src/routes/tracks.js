@@ -44,7 +44,7 @@ router.get('api.tracks.list', '/', async (ctx) => {
   }
   });
 
-  router.put('api.tracks.play', '/:id', async (ctx) => {
+  router.put('api.tracks.play', '/:id/play', async (ctx) => {
     try{
     console.log(ctx.params);
     const track = await ctx.orm.Track.findByPk(ctx.params.id);

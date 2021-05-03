@@ -23,6 +23,14 @@ router.get('api.artists.list', '/', async (ctx) => {
 
   router.get('api.albums.list', '/:id/albums', async (ctx) => {
     try{
+      const existe = await ctx.orm.Artist.findAll({
+        where: {
+          id: ctx.params.id
+        }
+      })
+    if (!existe.length){
+        ctx.throw(404, 'artista no encontrado')
+    }else{
       const albums = await ctx.orm.Album.findAll({
         where: {
           artistId: ctx.params.id
@@ -44,6 +52,7 @@ router.get('api.artists.list', '/', async (ctx) => {
           data.push(body);
         })
       ctx.body=data;
+    }
     }catch{
       ctx.throw(404, 'artista no encontrado')
     }
@@ -52,6 +61,14 @@ router.get('api.artists.list', '/', async (ctx) => {
 
   router.get('api.tracks.list', '/:id/tracks', async (ctx) => {
     try{
+      const existe = await ctx.orm.Artist.findAll({
+        where: {
+          id: ctx.params.id
+        }
+      })
+    if (!existe.length){
+        ctx.throw(404, 'artista no encontrado')
+    }else{
       const albums = await ctx.orm.Album.findAll({
         where: {
           artistId: ctx.params.id
@@ -88,6 +105,7 @@ router.get('api.artists.list', '/', async (ctx) => {
       })
           
       ctx.body=data;
+    }
     }catch (Error){
       console.log(Error)
       ctx.throw(404, 'artista no encontrado')
