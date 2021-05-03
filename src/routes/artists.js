@@ -125,7 +125,18 @@ router.get('api.artists.list', '/', async (ctx) => {
       }
     })
     if (existe.length) {
-      ctx.body ='artista ya existe'
+      const name1 = ctx.request.body['name']
+    const pkid =Buffer.from(name1).toString('base64').slice(0, 22);
+    const artist = await ctx.orm.Artist.findByPk(pkid);
+    ctx.body = {
+      id: artist.id,
+      name: artist.name,
+      age: artist.age,
+      albums: artist.albums,
+    tracks:  artist.tracks,
+      self:  artist.self
+
+  }
     ctx.status=409;
     } else {
     console.log('sssss');
@@ -183,7 +194,20 @@ router.get('api.artists.list', '/', async (ctx) => {
     })
     const artista = await ctx.orm.Artist.findByPk(ctx.params.id);
     if (existe.length) {
-      ctx.body ='album ya existe'
+      const name1 = ctx.request.body['name']
+    const encoder = `${name1}:${artista.id}`
+    const pkid =Buffer.from(encoder).toString('base64').slice(0, 22);
+      const album = await ctx.orm.Album.findByPk(pkid);
+    ctx.body = {
+        id: album.id,
+            artist_id: album.artistId,
+        name: album.name,
+        genre: album.genre,
+        artist:  album.artist,
+      tracks:  album.tracks,
+      self: album.self
+
+    }
     ctx.status=409;
     } else {
     console.log('sssss');
@@ -230,6 +254,7 @@ router.get('api.artists.list', '/', async (ctx) => {
   
   router.put('api.tracks.play', '/:id/albums/play', async (ctx) => {
     try{
+      console.log('quiero puuut')
       const albums = await ctx.orm.Album.findAll({
         where: {
           artistId: ctx.params.id

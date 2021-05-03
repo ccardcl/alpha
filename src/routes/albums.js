@@ -75,7 +75,7 @@ router.get('api.albums.list', '/', async (ctx) => {
   
  
   
-  router.post('api.albums.create', '/:id/tracks', async (ctx) => {
+  router.post('api.tracks.create', '/:id/tracks', async (ctx) => {
     if ((typeof ctx.request.body['name']) === 'string' && (typeof ctx.request.body['duration']) === 'number') {
       console.log('hola')
       const art = await ctx.orm.Album.findAll({
@@ -93,13 +93,28 @@ router.get('api.albums.list', '/', async (ctx) => {
     console.log('1sssss');
     const albuma = await ctx.orm.Album.findByPk(ctx.params.id);
     if (existe.length) {
-      ctx.body ='track ya existe'
+      const name1 = ctx.request.body['name'];
+    const encoder = `${name1}:${albuma.id}`;
+    const pkid =Buffer.from(encoder).toString('base64').slice(0, 22);
+    const track = await ctx.orm.Track.findByPk(pkid);
+    
+    ctx.body = {
+        id: track.id,
+            album_id: track.albumId,
+            name: track.name,
+            duration: track.duration,
+            times_played: track.times_played,
+            artist: track.artist,
+            album: track.album,
+            self:  track.self
+
+    }
     ctx.status=409;
     } else {
     console.log('sssss');
     const name1 = ctx.request.body['name']
     const encoder = `${name1}:${albuma.id}`
-    const pkid =Buffer.from(encoder).toString('base64').slice(0, 22);;
+    const pkid =Buffer.from(encoder).toString('base64').slice(0, 22);
     const  self = `${ctx.origin}/traks/${pkid}`;
     const album = `${ctx.origin}/albums/${albuma.id}`;
     const  artist =  `${ctx.origin}/artist/${albuma.artistId}`;
